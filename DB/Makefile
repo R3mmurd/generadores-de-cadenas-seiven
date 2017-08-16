@@ -21,7 +21,7 @@ OBJECTS = dbProperties.o dbConnection.o dbQuery.o strQuery.o
 
 lib:
 	$(RM) $(LOCALLIB)
-	$(CXX) $(INCLUDE) -c $(SOURCES) $(FLAGS) -fPIC
+	$(CXX) $(INCLUDE) -c $(SOURCES) $(FLAGS)
 	$(AR) -cvq $(LOCALLIB) $(OBJECTS)
 
 clean:

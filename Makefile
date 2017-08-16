@@ -1,7 +1,5 @@
 CXX = clang++
 
-SWIG = swig -python -c++
-
 WARN = -Wall -Wextra -Wcast-align -Wno-sign-compare -Wno-write-strings \
        -Wno-parentheses 
 
@@ -22,9 +20,6 @@ DBLIB = -L./DB -lpq -lDbAccess
 INCLUDE =  -I. -I $(ALEPH)
 
 LIBS = -L $(ALEPH) -lAleph -lgsl -lgslcblas
-
-PYTHONPATH = /usr/include
-PYTHONINC = $(PYTHONPATH)/python2.7
 
 all: dbloader main-caev-gen
 
@@ -53,18 +48,5 @@ caev-gen.o: caev-gen.H caev-gen.C
 caev-gen-dbg.o: caev-gen.H caev-gen.C	
 	$(CXX) $(DBG) $(INCLUDE) -c caev-gen.C -o caev-gen-dbg.o
 
-# Rules for Python binding
-py-caev-gen: py-models.o py-caev-gen.o
-	$(CXX) -c $(INCLUDE) $@.C $(FAST) -fPIC
-	$(SWIG) $@.i
-	$(CXX) -c $(INCLUDE) -I $(PYTHONINC) $@_wrap.cxx $(FAST) -fPIC
-	$(CXX) -shared $(INCLUDE) py-models.o py-caev-gen.o py-caev-gen_wrap.o -o _$@.so $(LIBS) $(FAST) -fPIC
-
-py-models.o: models.H models.C
-	$(CXX) $(FAST) $(INCLUDE) -c models.C -fPIC -o py-models.o
-
-py-caev-gen.o: caev-gen.H caev-gen.C
-	$(CXX) $(FAST) $(INCLUDE) -c caev-gen.C -fPIC -o py-caev-gen.o
-
 clean:
-	$(RM) *~ *.o dbloader main-caev-gen *-dbg py-caev-gen.py py-caev-gen_wrap.cxx
+	$(RM) *~ *.o dbloader main-caev-gen *-dbg
