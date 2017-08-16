@@ -23,26 +23,54 @@ void plot(const Net & net, const string & output_name)
 
       CAEV * caev = p->get_info().first;
 
-      stringstream s_label;
-      s_label << caev->cod << "\\n" << caev->description << "\\n\\n";
+      string node_color;
+
+      switch (p->get_info().second)
+	{
+	case NodePosition::ROOT: node_color = "seagreen"; break;
+	case NodePosition::UPSTREAM: node_color = "orange"; break;
+	case NodePosition::DOWNSTREAM: node_color = "cyan"; break;
+	default: node_color = "white";
+	}
+
+      stringstream s_title;
+      s_title << caev->cod << "\\n" << caev->description << "\\n\\n";
+
+      output << "  subgraph cluster_" << i << endl
+	     << "  {\n"
+	     << "    style = filled;\n"
+	     << "    fontcolor = white;\n"
+	     << "    color = " << node_color << endl
+	     << "    label = \"" << s_title.str() << "\";\n";
+
+      stringstream s_label1, s_label2;
 
       auto sub_ues = caev->get_sub_ues();
 
-      s_label << "Sub-unidades: " << sub_ues.size() << "\\n";
+      s_label1 << "Sub-unidades: " << sub_ues.size() << "\n";
+
+      TreeSet<UE *> ues;
 
       sub_ues.for_each([&](auto sub_ue_ptr) {
 
 	  UE * ue_ptr = sub_ue_ptr->ue;
+	  ues.insert(ue_ptr);
 
-	  s_label << "\\n" << "RIF: " << ue_ptr->rif << "\\n";
-	  s_label << ue_ptr->name << "\\n";
-	  s_label << sub_ue_ptr->name << "   -   "
-		  << sub_ue_ptr->location << "\\n";
-
+	  s_label2 << "\\n" << "RIF: " << ue_ptr->rif << "\\n";
+	  s_label2 << ue_ptr->name << "\\n";
+	  s_label2 << sub_ue_ptr->name << "   -   "
+		   << sub_ue_ptr->location << "\\n";
+	  
 	});
 
-      output << "  " << i << "[shape=box label=\"" << s_label.str()
-	     << "\"];" << endl;
+      s_label1 << "Unidades económica: " << ues.size() << endl << endl;
+
+      string label = s_label1.str() + s_label2.str();
+
+      output << "    " << i << "[shape=box label=\"" << label
+	     << "\" style = filled color = white];" << endl;
+
+      output << "  }\n\n";
       
       nodes_map.insert(p, i);
     }
@@ -56,7 +84,9 @@ void plot(const Net & net, const string & output_name)
       Net::Node * t     = net.get_tgt_node(a);
       size_t      s_idx = nodes_map[s];
       size_t      t_idx = nodes_map[t];
-      output << "  " << s_idx << " -> " << t_idx << ";" << endl;
+      output << "  " << s_idx << " -> " << t_idx
+	     << "[lhead = cluster_" << s_idx << " ltail = cluster_" << t_idx
+	     << "];" << endl;
     }
 
   output << "}" << endl;
@@ -160,7 +190,7 @@ void build_upstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
 	  */
 	  Net::Node * s = p->second;
 	  
-	  if (s != r and not exists_arc(s, r))
+	  if (not exists_arc(s, r))
 	    net.insert_arc(s, r);
 	}
       
@@ -216,11 +246,18 @@ void build_downstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
       else
 	{
 	  Net::Node * t = p->second;
-	  
-	  if (t != r and not exists_arc(r, t))
-	    net.insert_arc(r, t);
+
+	  if (r == t)
+	    {
+	      if (not exists_arc(r, t) and not exists_arc(t, r))
+		net.insert_arc(r, t);
+	    }
+	  else
+	    {
+	      if (not exists_arc(r, t))
+		net.insert_arc(r, t);
+	    }
 	}
-      
     });
 }
 

@@ -58,7 +58,7 @@ py-caev-gen: py-models.o py-caev-gen.o
 	$(CXX) -c $(INCLUDE) $@.C $(FAST) -fPIC
 	$(SWIG) $@.i
 	$(CXX) -c $(INCLUDE) -I $(PYTHONINC) $@_wrap.cxx $(FAST) -fPIC
-	$(CXX) -shared $(INCLUDE) py-models.o py-caev-gen.o -o _$@.so $(LIBS) $(FAST) -fPIC
+	$(CXX) -shared $(INCLUDE) py-models.o py-caev-gen.o py-caev-gen_wrap.o -o _$@.so $(LIBS) $(FAST) -fPIC
 
 py-models.o: models.H models.C
 	$(CXX) $(FAST) $(INCLUDE) -c models.C -fPIC -o py-models.o
