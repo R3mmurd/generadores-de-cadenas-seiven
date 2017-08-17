@@ -1,24 +1,18 @@
-# Makefile
-# Copyright (C) 2017 Alejandro J. Mujica
+# Makefile para compilar los programas de este paquete.
 
-# Este programa es software libre: puede redistribuirlo y/o modificarlo bajo
-# los términos de la Licencia General Pública de GNU publicada por la Free
-# Software Foundation, ya sea la versión 3 de la Licencia, o (a su elección)
-# cualquier versión posterior.
+# Copyright (C) 2017 Corporación de Desarrollo de la Región Los Andes.
 
-# Este programa se distribuye con la esperanza de que sea útil pero SIN
-# NINGUNA GARANTÍA; incluso sin la garantía implícita de MERCANTIBILIDAD o
-# CALIFICADA PARA UN PROPÓSITO EN PARTICULAR. Vea la Licencia General Pública
-# de GNU para más detalles.
+# Autor: Alejandro J. Mujica (aledrums en gmail punto com)
 
-# Usted ha debido de recibir una copia de la Licencia General Pública
-# de GNU junto con este programa. Si no, vea <http://www.gnu.org/licenses/>.
+# Este programa es software libre; Usted puede usarlo bajo los términos de la
+# licencia de software GPL versión 2.0 de la Free Software Foundation.
 
-# Cualquier solicitud de parte de los usuarios de este software, escribir a
-
-# Alejandro Mujica
-
-# aledrums@gmail.com
+# Este programa se distribuye con la esperanza de que sea útil, pero SIN
+# NINGUNA GARANTÍA; tampoco las implícitas garantías de MERCANTILIDAD o
+# ADECUACIÓN A UN PROPÓSITO PARTICULAR.
+# Consulte la licencia GPL para más detalles. Usted debe recibir una copia
+# de la GPL junto con este programa; si no, escriba a la Free Software
+# Foundation Inc. 51 Franklin Street,5 Piso, Boston, MA 02110-1301, USA.
 
 CXX = clang++
 

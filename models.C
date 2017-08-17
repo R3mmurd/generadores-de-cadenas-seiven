@@ -1,26 +1,20 @@
 /*
   Este archivo contiene la instrumentación de algunos de los métodos del modelo
   de datos definido para la construcción de cadenas productivas.
-  Copyright (C) 2017 Alejandro J. Mujica
   
-  Este programa es software libre: puede redistribuirlo y/o modificarlo bajo
-  los términos de la Licencia General Pública de GNU publicada por la Free
-  Software Foundation, ya sea la versión 3 de la Licencia, o (a su elección)
-  cualquier versión posterior.
+  Copyright (C) 2017 Corporación de Desarrollo de la Región Los Andes.
+
+  Autor: Alejandro J. Mujica (aledrums en gmail punto com)
   
-  Este programa se distribuye con la esperanza de que sea útil pero SIN
-  NINGUNA GARANTÍA; incluso sin la garantía implícita de MERCANTIBILIDAD o
-  CALIFICADA PARA UN PROPÓSITO EN PARTICULAR. Vea la Licencia General Pública
-  de GNU para más detalles.
-  
-  Usted ha debido de recibir una copia de la Licencia General Pública
-  de GNU junto con este programa. Si no, vea <http://www.gnu.org/licenses/>.
-
-  Cualquier solicitud de parte de los usuarios de este software, escribir a
-
-  Alejandro Mujica
-
-  aledrums@gmail.com
+  Este programa es software libre; Usted puede usarlo bajo los términos de la
+  licencia de software GPL versión 2.0 de la Free Software Foundation.
+ 
+  Este programa se distribuye con la esperanza de que sea útil, pero SIN
+  NINGUNA GARANTÍA; tampoco las implícitas garantías de MERCANTILIDAD o
+  ADECUACIÓN A UN PROPÓSITO PARTICULAR.
+  Consulte la licencia GPL para más detalles. Usted debe recibir una copia
+  de la GPL junto con este programa; si no, escriba a la Free Software
+  Foundation Inc. 51 Franklin Street,5 Piso, Boston, MA 02110-1301, USA.
 */
 
 # include <models.H>
@@ -97,7 +91,7 @@ CAEV * search_caev(const string & cod, CAEVLevel level, const Map & map)
     }
 }
 
-DynList<SubUE *> CAEVSection::get_sub_ues() const
+List<SubUE *> CAEVSection::get_sub_ues() const
 {
   TreeSet<SubUE *> set;
   
@@ -112,7 +106,7 @@ DynList<SubUE *> CAEVSection::get_sub_ues() const
   return set.items();
 }
 
-DynList<SubUE *> CAEVDivision::get_sub_ues() const
+List<SubUE *> CAEVDivision::get_sub_ues() const
 {
   TreeSet<SubUE *> set;
   
@@ -127,7 +121,7 @@ DynList<SubUE *> CAEVDivision::get_sub_ues() const
   return set.items();
 }
 
-DynList<SubUE *> CAEVGroup::get_sub_ues() const
+List<SubUE *> CAEVGroup::get_sub_ues() const
 {
   TreeSet<SubUE *> set;
   
@@ -142,7 +136,7 @@ DynList<SubUE *> CAEVGroup::get_sub_ues() const
   return set.items();
 }
 
-DynList<SubUE *> CAEVClass::get_sub_ues() const
+List<SubUE *> CAEVClass::get_sub_ues() const
 {
   TreeSet<SubUE *> set;
   
@@ -157,7 +151,7 @@ DynList<SubUE *> CAEVClass::get_sub_ues() const
   return set.items();
 }
 
-DynList<Product *> TariffCodeSection::get_products() const
+List<Product *> TariffCodeSection::get_products() const
 {
   TreeSet<Product *> set;
   
@@ -172,7 +166,7 @@ DynList<Product *> TariffCodeSection::get_products() const
   return set.items();
 }
 
-DynList<Product *> TariffCodeChapter::get_products() const
+List<Product *> TariffCodeChapter::get_products() const
 {
   TreeSet<Product *> set;
   
@@ -187,7 +181,7 @@ DynList<Product *> TariffCodeChapter::get_products() const
   return set.items();
 }
 
-DynList<Product *> TariffCodeItem::get_products() const
+List<Product *> TariffCodeItem::get_products() const
 {
   TreeSet<Product *> set;
   
@@ -202,7 +196,7 @@ DynList<Product *> TariffCodeItem::get_products() const
   return set.items();
 }
 
-DynList<Product *> TariffCodeSubItem::get_products() const
+List<Product *> TariffCodeSubItem::get_products() const
 {
   TreeSet<Product *> set;
   

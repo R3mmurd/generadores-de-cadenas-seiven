@@ -1,26 +1,20 @@
 /*
-  Este arcghivo contiene el programa que carga la base de datos necesaria y la
+  Este archivo contiene el programa que carga la base de datos necesaria y la
   almacena en texto plano.
-  Copyright (C) 2017 Alejandro J. Mujica
-  
-  Este programa es software libre: puede redistribuirlo y/o modificarlo bajo
-  los términos de la Licencia General Pública de GNU publicada por la Free
-  Software Foundation, ya sea la versión 3 de la Licencia, o (a su elección)
-  cualquier versión posterior.
-  
-  Este programa se distribuye con la esperanza de que sea útil pero SIN
-  NINGUNA GARANTÍA; incluso sin la garantía implícita de MERCANTIBILIDAD o
-  CALIFICADA PARA UN PROPÓSITO EN PARTICULAR. Vea la Licencia General Pública
-  de GNU para más detalles.
-  
-  Usted ha debido de recibir una copia de la Licencia General Pública
-  de GNU junto con este programa. Si no, vea <http://www.gnu.org/licenses/>.
 
-  Cualquier solicitud de parte de los usuarios de este software, escribir a
+  Copyright (C) 2017 Corporación de Desarrollo de la Región Los Andes.
 
-  Alejandro Mujica
-
-  aledrums@gmail.com
+  Autor: Alejandro J. Mujica (aledrums en gmail punto com)
+  
+  Este programa es software libre; Usted puede usarlo bajo los términos de la
+  licencia de software GPL versión 2.0 de la Free Software Foundation.
+ 
+  Este programa se distribuye con la esperanza de que sea útil, pero SIN
+  NINGUNA GARANTÍA; tampoco las implícitas garantías de MERCANTILIDAD o
+  ADECUACIÓN A UN PROPÓSITO PARTICULAR.
+  Consulte la licencia GPL para más detalles. Usted debe recibir una copia
+  de la GPL junto con este programa; si no, escriba a la Free Software
+  Foundation Inc. 51 Franklin Street,5 Piso, Boston, MA 02110-1301, USA.
 */
 
 # include <models.H>
@@ -34,6 +28,7 @@
 
 using namespace TCLAP;
 
+/// Constantes para los valores de configuración por defecto.
 struct DftConfValues
 {
   static const string CONF_NAME;
@@ -51,6 +46,7 @@ const string DftConfValues::USER        = "postgres";
 const string DftConfValues::DBNAME      = "sidepro";
 const string DftConfValues::OUTPUT_NAME = "sidepro-map.txt";
 
+/// Tipo de dato (singleton) que almacena los valores de configuración.
 class Configuration
 {
   string output_name = "";
@@ -96,6 +92,7 @@ public:
     verbose = v;
   }
 
+  /// Recupera la configuración almacenada en un archivo.
   bool restore_conf()
   {
     ifstream input(DftConfValues::CONF_NAME);
@@ -120,6 +117,7 @@ public:
     return true;
   }
 
+  /// Almacena la configuración en un archivo.
   bool save_conf() const
   {
     ofstream output(DftConfValues::CONF_NAME);
@@ -141,6 +139,13 @@ public:
 
 std::unique_ptr<Configuration> Configuration::instance(nullptr);
 
+/** Procesa la línea de comandos de ejcución del programa.
+
+    Esta operación captura los parámetros pasados a la ejecución del programa
+    y genera la configuración según éstos.
+   
+    @author Alejandro J. Mujica
+*/
 void process_cmd_line(int argc, char * argv[])
 {
   CmdLine cmd("DB Loader", ' ', "1.0");
@@ -238,6 +243,13 @@ void exec_query(DBQuery & q, StrQuery & sq)
   throw std::logic_error(s.str());
 }
 
+/** Función que carga todas las actividades económicas.
+
+    Esta operación lee de la base de datos todas las actividades económicas
+    con sus diferentes niveles de detalle y las carga en el modelo definido.
+
+    @author Alejandro J. Mujica
+*/
 TreeMap<string, CAEV *> load_caev(Map & map, AutoConnection & conn)
 {
   auto & sections  = map.caev_sections;
@@ -423,6 +435,13 @@ TreeMap<string, CAEV *> load_caev(Map & map, AutoConnection & conn)
   return caev_map_w;
 }
 
+/** Función que carga todos los códigos arancelarios.
+
+    Esta operación lee de la base de datos todos los códigos arancelarios
+    con sus diferentes niveles de detalle y los carga en el modelo definido.
+
+    @author Alejandro J. Mujica
+*/
 TreeMap<string, TariffCode *> load_tariffcodes(Map & map, AutoConnection & conn)
 {
   auto & sections    = map.tariffcode_sections;
@@ -613,6 +632,15 @@ TreeMap<string, TariffCode *> load_tariffcodes(Map & map, AutoConnection & conn)
   return tc_map_w;
 }
 
+/** Función que carga unidades económicas y sub unidades económicas.
+
+    Esta operación lee de la base de datos todas las unidades económicas
+    y las sub unidades económicas, establece las relaciones entre éstas,
+    las relaciones existentes entre sub unidades económicas y sus actividades
+    económicas y las carga en el modelo definido.
+
+    @author Alejandro J. Mujica
+*/
 std::pair<TreeMap<db_id_t, UE *>, TreeMap<db_id_t, SubUE *>>
 	      load_ue(Map & map, AutoConnection & conn,
 		      TreeMap<string, CAEV *> & caev_map)
@@ -748,6 +776,21 @@ std::pair<TreeMap<db_id_t, UE *>, TreeMap<db_id_t, SubUE *>>
   return make_pair(ue_map, sub_ue_map);
 }
 
+/** Función que carga los productos e insumos.
+
+    Esta operación lee de la base de datos los productos, establece las 
+    relaciones de éstos con las sub unidades económicas que los producen y sus
+    códigos arancelarios, carga la información de producción de éstos y las
+    ventas asociadas a cada producción. Finalmente carga todo esto en el modelo
+    definido.
+
+    También hace un trabajo análogo para insumos. Los lee, establece la relación
+    de éstos con los productos que los requieren, carga la información de la
+    producción de insumos y las compras asociados a éstas y finalmente los carga
+    en el modelo definido.
+
+    @author Alejandro J. Mujica
+*/
 void load_products(Map & map, AutoConnection & conn,
 		   TreeMap<db_id_t, UE *> & ue_map,
 		   TreeMap<db_id_t, SubUE *> & sub_ue_map,

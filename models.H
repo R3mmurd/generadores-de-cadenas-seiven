@@ -1,26 +1,20 @@
 /*
   Este archivo contiene la definición del modelo de datos definido para la
   construcción de cadenas productivas.
-  Copyright (C) 2017 Alejandro J. Mujica
   
-  Este programa es software libre: puede redistribuirlo y/o modificarlo bajo
-  los términos de la Licencia General Pública de GNU publicada por la Free
-  Software Foundation, ya sea la versión 3 de la Licencia, o (a su elección)
-  cualquier versión posterior.
+  Copyright (C) 2017 Corporación de Desarrollo de la Región Los Andes.
+
+  Autor: Alejandro J. Mujica (aledrums en gmail punto com)
   
-  Este programa se distribuye con la esperanza de que sea útil pero SIN
-  NINGUNA GARANTÍA; incluso sin la garantía implícita de MERCANTIBILIDAD o
-  CALIFICADA PARA UN PROPÓSITO EN PARTICULAR. Vea la Licencia General Pública
-  de GNU para más detalles.
-  
-  Usted ha debido de recibir una copia de la Licencia General Pública
-  de GNU junto con este programa. Si no, vea <http://www.gnu.org/licenses/>.
-
-  Cualquier solicitud de parte de los usuarios de este software, escribir a
-
-  Alejandro Mujica
-
-  aledrums@gmail.com
+  Este programa es software libre; Usted puede usarlo bajo los términos de la
+  licencia de software GPL versión 2.0 de la Free Software Foundation.
+ 
+  Este programa se distribuye con la esperanza de que sea útil, pero SIN
+  NINGUNA GARANTÍA; tampoco las implícitas garantías de MERCANTILIDAD o
+  ADECUACIÓN A UN PROPÓSITO PARTICULAR.
+  Consulte la licencia GPL para más detalles. Usted debe recibir una copia
+  de la GPL junto con este programa; si no, escriba a la Free Software
+  Foundation Inc. 51 Franklin Street,5 Piso, Boston, MA 02110-1301, USA.
 */
 
 # ifndef MODELS_H
@@ -43,6 +37,7 @@ using namespace std;
 # include <tpl_dynMapTree.H>
 # include <tpl_graph.H>
 
+// Declaraciones adelantas de los tipos
 struct CAEVSection;
 struct CAEVDivision;
 struct CAEVGroup;
@@ -63,20 +58,39 @@ struct InputProduction;
 struct Purchase;
 struct Map;
 
+/// Alias para el tipo de id en base de datos.
 using db_id_t = unsigned long long;
 
+/// Alias para representar años.
 using year_t = unsigned short;
 
+/// Alias para el tipo de conjunto basado en Árboles Binarios de Búsqueda
 template <typename Key, class Cmp = std::less<Key>>
   using TreeSet = DynSetAvlTree<Key, Cmp>;
 
+/// Alias para el tipo de mapa basado en Árboles Binarios de Búsqueda
 template <typename Key, typename Data, class Cmp = std::less<Key>>
   using TreeMap = DynMapAvlTree<Key, Data, Cmp>;
 
+/// Alias para el tipo de lista basada en una lista simplemente enlazada.
+template <typename T> using List = DynList<T>;
+
+/// Enumerado para representar los niveles de detalle de actividades económicas.
 enum class CAEVLevel { SECTION, DIVISION, GROUP, CLASS, BRANCH };
 
+/// Enumerado para representar los niveles de detalle de códigos arancelarios.
+enum class TariffCodeLevel { SECTION, CHAPTER, ITEM, SUBITEM, SUBSUBITEM };
+
+/// Enumerado para etiquetar los nodos de los grafos que representan cadenas.
 enum class NodePosition { ROOT, UPSTREAM, DOWNSTREAM };
 
+/** Tipo que representa un código de manera general.
+
+    Este tipo se utiliza como generalización para la actividad económica base y
+    el código arancelario base.
+
+    @author Alejandro J. Mujica
+*/
 struct Cod
 {
   string cod;
@@ -113,12 +127,14 @@ struct Cod
     std::swap(description, c.description);
     return *this;
   }
-  
+
+  /// Almacena los valores en un archivo de texto plano cuyo flujo es out.
   virtual void save(ostream & out, TreeMap<Cod *, size_t> &) const
   {
     out << cod << endl << description << endl;    
   }
 
+  /// Carga los valores desde un archivo de texto plano cuyo flujo es in.
   virtual void load(istream & in, DynArray<Cod *> &)
   {
     getline(in, cod);
@@ -126,6 +142,10 @@ struct Cod
   }
 };
 
+/** Tipo que representa la base para actvidades económicas.
+
+    @author Alejandro J. Mujica
+*/
 struct CAEV : public Cod
 {
   CAEV() : Cod() { /* empty */ }
@@ -148,12 +168,16 @@ struct CAEV : public Cod
     (Cod &) *this = std::move(c);
     return *this;
   }
-  
-  virtual DynList<SubUE *> get_sub_ues() const = 0;
 
-  DynList<Product *> get_products() const
+  /** Función abstracta que retorna todas las sub unidades económicas de
+      una actividad económica.
+  */
+  virtual List<SubUE *> get_sub_ues() const = 0;
+
+  /// Retorna todos los productos asociados a la actividad económica.
+  List<Product *> get_products() const
   {
-    DynList<Product *> l;
+    List<Product *> l;
 
     get_sub_ues().for_each([&l](auto ue)
 			   {
@@ -166,8 +190,14 @@ struct CAEV : public Cod
   }
 };
 
+/** Tipo que representa actividades económicas en nivel de detalle Sección.
+
+    @author Alejandro J. Mujica
+*/
 struct CAEVSection : public CAEV
 {
+  List<CAEVDivision *> divisions;
+  
   CAEVSection() : CAEV() { /* empty */ }
 
   CAEVSection(const CAEVSection & c) : CAEV(c) { /* empty */ }
@@ -189,16 +219,18 @@ struct CAEVSection : public CAEV
     (CAEV &) *this = std::move(c);
     return *this;
   }
-  
-  DynList<CAEVDivision *> divisions;
 
-  DynList<SubUE *> get_sub_ues() const override;
+  List<SubUE *> get_sub_ues() const override;
 };
 
+/** Tipo que representa actividades económicas en nivel de detalle División.
+
+    @author Alejandro J. Mujica
+*/
 struct CAEVDivision : public CAEV
 {
-  CAEVSection        * section;
-  DynList<CAEVGroup *> groups;
+  CAEVSection     * section;
+  List<CAEVGroup *> groups;
 
   CAEVDivision() : CAEV(), section(nullptr), groups() { /* empty */ }
 
@@ -231,7 +263,7 @@ struct CAEVDivision : public CAEV
     return *this;
   }
 
-  DynList<SubUE *> get_sub_ues() const override;
+  List<SubUE *> get_sub_ues() const override;
 
   void save(ostream & out, TreeMap<Cod *, size_t> & idxs) const override
   {
@@ -249,10 +281,14 @@ struct CAEVDivision : public CAEV
   }
 };
 
+/** Tipo que representa actividades económicas en nivel de detalle Grupo.
+
+    @author Alejandro J. Mujica
+*/
 struct CAEVGroup : public CAEV
 {
-  CAEVDivision       * division;
-  DynList<CAEVClass *> classes;
+  CAEVDivision    * division;
+  List<CAEVClass *> classes;
 
   CAEVGroup() : CAEV(), division(nullptr), classes() { /* empty */ }
 
@@ -285,7 +321,7 @@ struct CAEVGroup : public CAEV
     return *this;
   }
 
-  DynList<SubUE *> get_sub_ues() const override;
+  List<SubUE *> get_sub_ues() const override;
 
   void save(ostream & out, TreeMap<Cod *, size_t> & idxs) const override
   {
@@ -303,10 +339,14 @@ struct CAEVGroup : public CAEV
   }
 };
 
+/** Tipo que representa actividades económicas en nivel de detalle Clase.
+
+    @author Alejandro J. Mujica
+*/
 struct CAEVClass : public CAEV
 {
-  CAEVGroup           * group;
-  DynList<CAEVBranch *> branches;
+  CAEVGroup        * group;
+  List<CAEVBranch *> branches;
 
   CAEVClass() : CAEV(), group(nullptr), branches() { /* empty */ }
 
@@ -339,7 +379,7 @@ struct CAEVClass : public CAEV
     return *this;
   }
 
-  DynList<SubUE *> get_sub_ues() const override;
+  List<SubUE *> get_sub_ues() const override;
 
   void save(ostream & out, TreeMap<Cod *, size_t> & idxs) const override
   {
@@ -357,10 +397,14 @@ struct CAEVClass : public CAEV
   }
 };
 
+/** Tipo que representa actividades económicas en nivel de detalle Rama.
+
+    @author Alejandro J. Mujica
+*/
 struct CAEVBranch : public CAEV
 {
-  CAEVClass      * clazz;
-  DynList<SubUE *> sub_ues;
+  CAEVClass   * clazz;   // class con zz debido a la palabra reservada.
+  List<SubUE *> sub_ues;
 
   CAEVBranch() : CAEV(), clazz(nullptr), sub_ues() { /* empty */ }
 
@@ -393,7 +437,7 @@ struct CAEVBranch : public CAEV
     return *this;
   }
 
-  DynList<SubUE *> get_sub_ues() const override
+  List<SubUE *> get_sub_ues() const override
   {
     return sub_ues;
   }
@@ -414,8 +458,14 @@ struct CAEVBranch : public CAEV
   }
 };
 
+/** Tipo que representa la base para códigos arancelarios.
+
+    @author Alejandro J. Mujica
+*/
 struct TariffCode : public Cod
 {
+  List<TariffCodeChapter *> chapters;
+  
   TariffCode() : Cod() { /* empty */ }
 
   TariffCode(const TariffCode & c) : Cod(c) { /* empty */ }
@@ -434,12 +484,19 @@ struct TariffCode : public Cod
   TariffCode & operator = (TariffCode && c)
   {
     (Cod &) *this = std::move(c);
-    return *this;
+   return *this;
   }
-  
-  virtual DynList<Product *> get_products() const = 0;
+
+  /** Función virtual que devuelve la lista de todos los productos asociados
+      al código arancelario.
+  */
+  virtual List<Product *> get_products() const = 0;
 };
 
+/** Tipo que representa códigos arancelaros en nivel de detalle Sección.
+
+    @author Alejandro J. Mujica
+*/
 struct TariffCodeSection : public TariffCode
 {
   TariffCodeSection() : TariffCode() { /* empty */ }
@@ -464,16 +521,18 @@ struct TariffCodeSection : public TariffCode
     (TariffCode &) *this = std::move(c);
     return *this;
   }
-  
-  DynList<TariffCodeChapter *> chapters;
 
-  DynList<Product *> get_products() const override;
+  List<Product *> get_products() const override;
 };
 
+/** Tipo que representa códigos arancelaros en nivel de detalle Capítulo.
+
+    @author Alejandro J. Mujica
+*/
 struct TariffCodeChapter : public TariffCode
 {
   TariffCodeSection       * section;
-  DynList<TariffCodeItem *> items;
+  List<TariffCodeItem *> items;
 
   TariffCodeChapter() : TariffCode(), section(nullptr), items() { /* empty */ }
 
@@ -506,7 +565,7 @@ struct TariffCodeChapter : public TariffCode
     return *this;
   }
 
-  DynList<Product *> get_products() const override;
+  List<Product *> get_products() const override;
 
   void save(ostream & out, TreeMap<Cod *, size_t> & idxs) const override
   {
@@ -524,10 +583,14 @@ struct TariffCodeChapter : public TariffCode
   }
 };
 
+/** Tipo que representa códigos arancelaros en nivel de detalle Partida.
+
+    @author Alejandro J. Mujica
+*/
 struct TariffCodeItem : public TariffCode
 {
   TariffCodeChapter          * chapter;
-  DynList<TariffCodeSubItem *> subitems;
+  List<TariffCodeSubItem *> subitems;
 
   TariffCodeItem() : TariffCode(), chapter(nullptr), subitems() { /* empty */ }
 
@@ -560,7 +623,7 @@ struct TariffCodeItem : public TariffCode
     return *this;
   }
   
-  DynList<Product *> get_products() const override;
+  List<Product *> get_products() const override;
 
   void save(ostream & out, TreeMap<Cod *, size_t> & idxs) const override
   {
@@ -578,10 +641,14 @@ struct TariffCodeItem : public TariffCode
   }
 };
 
+/** Tipo que representa códigos arancelaros en nivel de detalle Sub Partida.
+
+    @author Alejandro J. Mujica
+*/
 struct TariffCodeSubItem : public TariffCode
 {
   TariffCodeItem                * item;
-  DynList<TariffCodeSubSubItem *> subsubitems;
+  List<TariffCodeSubSubItem *> subsubitems;
   
   TariffCodeSubItem()
     : TariffCode(), item(nullptr), subsubitems() { /* empty */ }
@@ -616,7 +683,7 @@ struct TariffCodeSubItem : public TariffCode
     return *this;
   }
 
-  DynList<Product *> get_products() const override;
+  List<Product *> get_products() const override;
 
   void save(ostream & out, TreeMap<Cod *, size_t> & idxs) const override
   {
@@ -634,10 +701,14 @@ struct TariffCodeSubItem : public TariffCode
   }
 };
 
+/** Tipo que representa códigos arancelaros en nivel de detalle Sub Sub Partida.
+
+    @author Alejandro J. Mujica
+*/
 struct TariffCodeSubSubItem : public TariffCode
 {
   TariffCodeSubItem * subitem;
-  DynList<Product *>  products;
+  List<Product *>  products;
 
   TariffCodeSubSubItem()
     : TariffCode(), subitem(nullptr), products() { /* empty */ }
@@ -672,7 +743,7 @@ struct TariffCodeSubSubItem : public TariffCode
     return *this;
   }
 
-  DynList<Product *> get_products() const override
+  List<Product *> get_products() const override
   {
     return products;
   }
@@ -693,11 +764,15 @@ struct TariffCodeSubSubItem : public TariffCode
   }
 };
 
+/** Tipo que representa una unidad económica.
+
+    @author Alejandro J. Mujica
+*/
 struct UE
 {
   string           rif;
   string           name;
-  DynList<SubUE *> sub_ues;
+  List<SubUE *> sub_ues;
 
   UE()
     : rif(""), name(""), sub_ues() { /* empty */ }
@@ -732,7 +807,10 @@ struct UE
     return *this;
   }
 
-  DynList<CAEVBranch *> caevs() const
+  /** Retorna una lista con las actividades económicas asociadas a sus sub
+      unidades económicas.
+  */
+  List<CAEVBranch *> caevs() const
   {
     TreeSet<CAEVBranch *> set;
 
@@ -744,10 +822,16 @@ struct UE
     return set.items();
   }
 
+  /** Retorna una lista con los productos de todas sus sub unidades económicas
+      filtrados según el criterio filter.
+
+      En esta operación para un producto p, si la operación filter(p) retorna
+      true, entonces el p se añade en la lista. Si retorna false, es ignorado.
+  */
   template <class Filter>
-  DynList<Product *> filter_products(Filter & filter) const
+  List<Product *> filter_products(Filter & filter) const
   {
-    DynList<Product *> l;
+    List<Product *> l;
 
     sub_ues.for_each([&l, &filter] (auto sub_ue)
 		     {
@@ -761,15 +845,22 @@ struct UE
   }
 
   template <class Filter>
-  DynList<Product *> filter_products(Filter && filter = Filter()) const
+  List<Product *> filter_products(Filter && filter = Filter()) const
   {
     return filter_products<Filter>(filter);
   }
-  
+
+  /** Esta operación es semejante a filter_products pero lo hace con los 
+      insumos requeridos por cada uno de los productos.
+     
+      Nótese que se utiliza filter_products con un criterio que siempre retorna
+      true para consultar todos los productos. Los que se filtrarán serán los
+      insumos.
+  */
   template <class Filter>
-  DynList<Input *> filter_inputs(Filter & filter) const
+  List<Input *> filter_inputs(Filter & filter) const
   {
-    DynList<Input *> l;
+    List<Input *> l;
 
     filter_products([&] (auto) { return true; })
       .for_each([&] (auto p) {
@@ -783,7 +874,7 @@ struct UE
   }
 
   template <class Filter>
-  DynList<Input *> filter_inputs(Filter && filter = Filter()) const
+  List<Input *> filter_inputs(Filter && filter = Filter()) const
   {
     return filter_inputs<Filter>(filter);
   }
@@ -801,6 +892,10 @@ struct UE
   }
 };
 
+/** Tipo que representa una sub unidad económica.
+
+    @author Alejandro J. Mujica
+*/
 struct SubUE
 {
   db_id_t            db_id;
@@ -808,7 +903,7 @@ struct SubUE
   string             location;
   UE               * ue;
   CAEVBranch       * caev;
-  DynList<Product *> products;
+  List<Product *> products;
 
   SubUE()
     : db_id(0), name(""), location(""), ue(nullptr), caev(nullptr), products()
@@ -859,6 +954,7 @@ struct SubUE
     return *this;
   }
 
+  /// Retorna la actividad económica según el nivel de detalle dado.
   CAEV * get_caev(CAEVLevel level)
   {
     switch (level)
@@ -903,12 +999,16 @@ struct SubUE
   }
 };
 
+/** Tipo que representa la producción de un producto.
+
+    @author Alejandro J. Mujica
+*/
 struct Production
 {
-  Product                      * product;
-  double                         quantity;
-  string                         meassurement_unit;
-  TreeMap<year_t, DynList<Sale>> sales_by_year;
+  Product                   * product;
+  double                      quantity;
+  string                      meassurement_unit;
+  TreeMap<year_t, List<Sale>> sales_by_year;
 
   Production()
     : product(nullptr), quantity(0.0), meassurement_unit(""), sales_by_year()
@@ -953,12 +1053,14 @@ struct Production
     return *this;
   }
 
-  DynList<Sale> & sales(year_t year)
+  /// Retorna todas las ventas asociadas a una producción un año dado
+  List<Sale> & sales(year_t year)
   {
     return sales_by_year[year];
   }
 
-  const DynList<Sale> & sales(year_t year) const
+  /// Como la anterior pero para objetos constantes.
+  const List<Sale> & sales(year_t year) const
   {
     return sales_by_year[year];
   }
@@ -968,13 +1070,17 @@ struct Production
   void load(istream & in, DynArray<UE *> & ues);
 };
 
+/** Tipo que representa un producto.
+
+    @author Alejandro J. Mujica
+*/
 struct Product
 {
   db_id_t                     db_id;
   string                      name;
   SubUE                     * sub_ue;
   TariffCodeSubSubItem      * tariffcode;
-  DynList<Input *>            inputs;
+  List<Input *>               inputs;
   TreeMap<year_t, Production> productions_by_year;
 
   Product()
@@ -1026,11 +1132,13 @@ struct Product
     return *this;
   }
 
+  /// Retorna la producción de este producto para un año dado.
   Production & production(year_t year)
   {
     return productions_by_year[year];
   }
 
+  /// Como la anterior pero para objetos constantes.
   const Production & production(year_t year) const
   {
     return productions_by_year[year];
@@ -1049,12 +1157,16 @@ struct Product
 	    DynArray<SubUE *> & sub_ues, TreeSet<year_t> & years);
 };
 
+/** Tipo que representa una venta para una producción.
+
+    @author Alejandro J. Mujica
+*/
 struct Sale
 {
-  UE         * client;
-  double       quantity;
-  string       meassurement_unit;
-  double       price;
+  UE   * client;
+  double quantity;
+  string meassurement_unit;
+  double price;
 
   Sale()
     : client(nullptr), quantity(0.0), meassurement_unit(""), price(0.0)
@@ -1121,10 +1233,14 @@ struct Sale
   }
 };
 
+/** Tipo que representa la producción de un insumo.
+
+    @author Alejandro J. Mujica
+*/
 struct InputProduction
 {
   Input                            * input;
-  TreeMap<year_t, DynList<Purchase>> purchases_by_year;
+  TreeMap<year_t, List<Purchase>> purchases_by_year;
 
   InputProduction()
     : input(nullptr), purchases_by_year()
@@ -1162,12 +1278,14 @@ struct InputProduction
     return *this;
   }
 
-  DynList<Purchase> & purchases(year_t year)
+  /// Retorna las compras asociadas a la producción para un año dado.
+  List<Purchase> & purchases(year_t year)
   {
     return purchases_by_year[year];
   }
 
-  const DynList<Purchase> & purchases(year_t year) const
+  /// Como la anterior pero para objetos constantes.
+  const List<Purchase> & purchases(year_t year) const
   {
     return purchases_by_year[year];
   }
@@ -1177,6 +1295,10 @@ struct InputProduction
   void load(istream & in, DynArray<UE *> & ues);
 };
 
+/** Tipo que representa un insumo.
+
+    @author Alejandro J. Mujica
+*/
 struct Input
 {
   db_id_t                          db_id;
@@ -1233,11 +1355,13 @@ struct Input
     return *this;
   }
 
+  /// Retorna la producción del insumo para un año dado.
   InputProduction & production(year_t year)
   {
     return productions_by_year[year];
   }
 
+  /// Como la anterior pero para objetos constantes.
   const InputProduction & production(year_t year) const
   {
     return productions_by_year[year];
@@ -1251,12 +1375,16 @@ struct Input
 	    DynArray<UE *> & ues, TreeSet<year_t> & years);
 };
 
+/** Tipo que representa una compra.
+
+    @author Alejandro J. Mujica
+*/
 struct Purchase
 {
-  UE              * provider;
-  double            quantity;
-  string            meassurement_unit;
-  double            price;
+  UE   * provider;
+  double quantity;
+  string meassurement_unit;
+  double price;
 
   Purchase()
     : provider(nullptr), quantity(0.0), meassurement_unit(""), price(0.0)
@@ -1324,6 +1452,11 @@ struct Purchase
   }
 };
 
+/** Criterio de comparación para códigos (actividades económicas o
+    códigos arancelarios en conjuntos basados en Árbol Binario de Búsqueda.
+
+    @author Alejandro J. Mujica
+*/
 struct CodCmp
 {
   bool operator () (const Cod & c1, const Cod & c2) const
@@ -1332,6 +1465,11 @@ struct CodCmp
   };
 };
 
+/** Criterio de comparación para unidades económicas en conjuntos basados en
+    Árbol Binario de Búsqueda.
+
+    @author Alejandro J. Mujica
+*/
 struct UECmp
 {
   bool operator () (const UE & ue1, const UE & ue2) const
@@ -1340,6 +1478,11 @@ struct UECmp
   };
 };
 
+/** Criterio de comparación para sub unidades económicas en conjuntos basados en
+    Árbol Binario de Búsqueda.
+
+    @author Alejandro J. Mujica
+*/
 struct SubUECmp
 {
   bool operator () (const SubUE & sub1, const SubUE & sub2) const
@@ -1348,6 +1491,11 @@ struct SubUECmp
   }
 };
 
+/** Criterio de comparación para productos en conjuntos basados en
+    Árbol Binario de Búsqueda.
+
+    @author Alejandro J. Mujica
+*/
 struct ProductCmp
 {
   bool operator () (const Product & p1, const Product & p2) const
@@ -1356,6 +1504,11 @@ struct ProductCmp
   };
 };
 
+/** Criterio de comparación para insumos en conjuntos basados en
+    Árbol Binario de Búsqueda.
+
+    @author Alejandro J. Mujica
+*/
 struct InputCmp
 {
   bool operator () (const Input & i1, const Input & i2) const
@@ -1364,6 +1517,10 @@ struct InputCmp
   }
 };
 
+/** Tipo que representa el mapa de toda la producción y relaciones económicas.
+
+    @author Alejandro J. Mujica
+*/
 struct Map
 {
   TreeSet<CAEVSection, CodCmp>          caev_sections;
@@ -1469,10 +1626,26 @@ struct Map
   void load(istream &);
 };
 
+/** Función que dada una cadena con el nivel de detalle de las actividades
+    económicas retorna el enumerado correspondiente.
+
+    @author Alejandro J. Mujica
+*/
 CAEVLevel str_to_level(const string & lvl);
 
+/** Función que dado una constante (del tipo enumerado) con el nivel de
+    detalle de las actividades económicas, retorna la cadena con el nombre
+    del nivel.
+
+    @author Alejandro J. Mujica
+*/
 string level_to_str(CAEVLevel level);
 
+/** Función que busca en el mapa un código de actividad económica en el nivel
+    dado.
+
+    @author Alejandro J. Mujica
+*/
 CAEV * search_caev(const string & cod, CAEVLevel level, const Map & map);
 
 # endif // MODELS_H
