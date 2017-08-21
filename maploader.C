@@ -39,7 +39,7 @@ struct DftConfValues
   static const string OUTPUT_NAME;
 };
 
-const string DftConfValues::CONF_NAME   = "dbloader.cfg";
+const string DftConfValues::CONF_NAME   = "maploader.cfg";
 const string DftConfValues::HOST        = "127.0.0.1";
 const string DftConfValues::PORT        = "5432";
 const string DftConfValues::USER        = "postgres";
@@ -148,7 +148,7 @@ std::unique_ptr<Configuration> Configuration::instance(nullptr);
 */
 void process_cmd_line(int argc, char * argv[])
 {
-  CmdLine cmd("DB Loader", ' ', "1.0");
+  CmdLine cmd("Map Loader", ' ', "1.0");
 
   ValueArg<string> host("H", "host", "Host del servidor de base de datos", false,
 			DftConfValues::HOST, "HOSTNAME");

@@ -37,13 +37,13 @@ INCLUDE =  -I. -I $(ALEPH)
 
 LIBS = -L $(ALEPH) -lAleph -lgsl -lgslcblas
 
-all: dbloader main-caev-gen
+all: maploader main-caev-gen
 
-dbloader: models.o dbloader.C
+maploader: models.o maploader.C
 	$(CXX) $(FAST) $(INCLUDE) $(DBINC) $@.C -o $@ models.o $(DBLIB) $(LIBS)
 
-dbloader-dbg: models-dbg.o dbloader.C
-	$(CXX) $(DBG) $(INCLUDE) $(DBINC) dbloader.C -o $@ models-dbg.o $(DBLIB) $(LIBS)
+maploader-dbg: models-dbg.o maploader.C
+	$(CXX) $(DBG) $(INCLUDE) $(DBINC) maploader.C -o $@ models-dbg.o $(DBLIB) $(LIBS)
 
 main-caev-gen: models.o caev-gen.o main-caev-gen.C
 	$(CXX) $(FAST) $(INCLUDE) $@.C -o $@ models.o caev-gen.o $(LIBS)
@@ -65,4 +65,4 @@ caev-gen-dbg.o: caev-gen.H caev-gen.C
 	$(CXX) $(DBG) $(INCLUDE) -c caev-gen.C -o caev-gen-dbg.o
 
 clean:
-	$(RM) *~ *.o dbloader main-caev-gen *-dbg
+	$(RM) *~ *.o maploader main-caev-gen *-dbg

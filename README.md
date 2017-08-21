@@ -30,16 +30,16 @@ Este paquete contiene los siguientes archivos:
 * process.H contiene una clase utilitaria que envuelve el llamado a procesos
 externos.
 
-* dbloader.C
+* maploader.C
 
   Este programa se encarga leer una base de datos sidepro, los carga en el
   modelo diseñado y lo almacena en un archivo de texto plano para
   posteriormente ser leído por los programas que construyen las cadenas.
 
-  - Compilación en modo depuración: make dbloader-dbg
-  - Compilación en modo optimizado: make dbloader
+  - Compilación en modo depuración: make maploader-dbg
+  - Compilación en modo optimizado: make maploader
   - Para obtener ayuda de cómo ejecutar este programa,
-    ejecute ./dbloader --help
+    ejecute ./maploader --help
 
 * main-caev-gen.C
 

@@ -20,8 +20,6 @@
 # ifndef CAEVGEN_H
 # define CAEVGEN_H
 
-# include <regex>
-
 # include <models.H>
 # include <tpl_graph.H>
 
@@ -37,7 +35,7 @@ using NodeInfo = pair<CAEV *, NodePosition>;
 /// Alias para el tipo de grafo
 using Net = List_Graph<Graph_Node<NodeInfo>>;
 
-/** Función que grafica una cadena productiva.
+/** Función que grafica una cadena productiva por actividad económica.
 
     Esta operación genera un gráfico vectorial en formato svg de la cadena
     productiva.
