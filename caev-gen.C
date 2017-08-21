@@ -293,7 +293,7 @@ void generate_caev_chain(const string & lvl, const string & caev_cod,
        << "Output file name: " << output_name << endl;
 # endif
   
-  CAEVLevel level = str_to_level(lvl);
+  CAEVLevel level = str_to_caevlevel(lvl);
 
   Map map;
   
@@ -316,13 +316,13 @@ void generate_caev_chain(const string & lvl, const string & caev_cod,
       throw domain_error(s.str());
     }
   
-  CAEV * caev = search_caev(caev_cod, level, map);
+  CAEV * caev = search_caevlevel(caev_cod, level, map);
 
   if (caev == nullptr)
     {
       stringstream s;
       s << "El código de actividad económica " << caev_cod
-	<< " no existe en el nivel " << level_to_str(level);
+	<< " no existe en el nivel " << caevlevel_to_str(level);
       throw domain_error(s.str());
     }
 

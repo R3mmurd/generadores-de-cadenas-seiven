@@ -1631,21 +1631,43 @@ struct Map
 
     @author Alejandro J. Mujica
 */
-CAEVLevel str_to_level(const string & lvl);
+CAEVLevel str_to_caevlevel(const string & lvl);
 
-/** Función que dado una constante (del tipo enumerado) con el nivel de
+/** Función que dada una constante (del tipo enumerado) con el nivel de
     detalle de las actividades económicas, retorna la cadena con el nombre
     del nivel.
 
     @author Alejandro J. Mujica
 */
-string level_to_str(CAEVLevel level);
+string caevlevel_to_str(CAEVLevel level);
 
 /** Función que busca en el mapa un código de actividad económica en el nivel
     dado.
 
     @author Alejandro J. Mujica
 */
-CAEV * search_caev(const string & cod, CAEVLevel level, const Map & map);
+CAEV * search_caevlevel(const string & cod, CAEVLevel level, const Map & map);
+
+/** Función que dada una cadena con el nivel de detalle del código arancelario
+    retorna el enumerado correspondiente.
+
+    @author Alejandro J. Mujica
+*/
+TariffCodeLevel str_to_tariffcodelevel(const string & lvl);
+
+/** Función que dada una constante (del tipo enumerado) con el nivel de
+    detalle del código arancelario, retorna la cadena con el nombre
+    del nivel.
+
+    @author Alejandro J. Mujica
+*/
+string tariffcodelevel_to_str(TariffCodeLevel level);
+
+/** Función que busca en el mapa un código arancelario en el nivel dado.
+
+    @author Alejandro J. Mujica
+*/
+TariffCode * search_tariffcodelevel(const string & cod, TariffCodeLevel level,
+				    const Map & map);
 
 # endif // MODELS_H

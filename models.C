@@ -19,7 +19,7 @@
 
 # include <models.H>
 
-CAEVLevel str_to_level(const string & lvl)
+CAEVLevel str_to_caevlevel(const string & lvl)
 {
   if (regex_match(lvl, regex{"[sS][eE][cC][cC][iI][oO][nN]"}))
     return CAEVLevel::SECTION;
@@ -39,7 +39,7 @@ CAEVLevel str_to_level(const string & lvl)
   throw logic_error("Error en nivel de actividad económica");
 }
 
-string level_to_str(CAEVLevel level)
+string caevlevel_to_str(CAEVLevel level)
 {
   switch (level)
     {
@@ -52,7 +52,7 @@ string level_to_str(CAEVLevel level)
     }
 }
 
-CAEV * search_caev(const string & cod, CAEVLevel level, const Map & map)
+CAEV * search_caevlevel(const string & cod, CAEVLevel level, const Map & map)
 {
   switch (level)
     {
@@ -89,6 +89,46 @@ CAEV * search_caev(const string & cod, CAEVLevel level, const Map & map)
     default:
       throw logic_error("Error en nivel de actividad económica");
     }
+}
+
+TariffCodeLevel str_to_tariffcodelevel(const string & lvl)
+{
+  if (regex_match(lvl, regex{"[sS][eE][cC][cC][iI][oO][nN]"}))
+    return TariffCodeLevel::SECTION;
+
+  if (regex_match(lvl, regex{"[cC][aA][pP][iI][tT][uU][lL][oO]"}))
+    return TariffCodeLevel::CHAPTER;
+
+  if (regex_match(lvl, regex{"[pP][aA][rR][tT][iI][dD][aA]"}))
+    return TariffCodeLevel::ITEM;
+
+  if (regex_match(lvl, regex{"[sS][uU][bB][pP][aA][rR][tT][iI][dD][aA]"}))
+    return TariffCodeLevel::SUBITEM;
+
+  if (regex_match(lvl,
+		  regex{"[sS][uU][bB][sS][uU][bB][pP][aA][rR][tT][iI][dD][aA]"}))
+    return TariffCodeLevel::SUBSUBITEM;
+
+  throw logic_error("Error en nivel de código arancelario");
+}
+
+string tariffcodelevel_to_str(TariffCodeLevel level)
+{
+  switch (level)
+    {
+    case TariffCodeLevel::SECTION:    return "Seccion";
+    case TariffCodeLevel::CHAPTER:    return "Capitulo";
+    case TariffCodeLevel::ITEM:       return "Partida";
+    case TariffCodeLevel::SUBITEM:    return "Subpartida";
+    case TariffCodeLevel::SUBSUBITEM: return "Subsubpartida";
+    default: throw logic_error("Error en nivel de código arancelario");
+    }
+}
+
+TariffCode * search_tariffcodelevel(const string & cod, TariffCodeLevel level,
+				    const Map & map)
+{
+  return nullptr;
 }
 
 List<SubUE *> CAEVSection::get_sub_ues() const
