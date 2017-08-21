@@ -964,6 +964,7 @@ struct SubUE
       case CAEVLevel::GROUP:    return caev->clazz->group;
       case CAEVLevel::CLASS:    return caev->clazz;
       case CAEVLevel::BRANCH:   return caev;
+      default: throw domain_error("Error en nivel de código arancelario");
       }
   }
   
@@ -1147,6 +1148,24 @@ struct Product
   CAEV * get_caev(CAEVLevel level)
   {
     return sub_ue->get_caev(level);
+  }
+
+  TariffCode * get_tariffcode(TariffCodeLevel level)
+  {
+    switch (level)
+      {
+      case TariffCodeLevel::SECTION:
+	return tariffcode->subitem->item->chapter->section;	
+      case TariffCodeLevel::CHAPTER:
+	return tariffcode->subitem->item->chapter;
+      case TariffCodeLevel::ITEM:
+	return tariffcode->subitem->item;
+      case TariffCodeLevel::SUBITEM:
+	return tariffcode->subitem;	
+      case TariffCodeLevel::SUBSUBITEM:
+	return tariffcode;
+      default: throw domain_error("Error en nivel de código arancelario");
+      }
   }
 
   void save(ostream & out, TreeMap<Cod *, size_t> & tc_idxs,

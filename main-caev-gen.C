@@ -1,5 +1,5 @@
 /*
-  Este archivo contiene el rograma para construir cadenas por actividad 
+  Este archivo contiene el programa para construir cadenas por actividad 
   económica.
   
   Copyright (C) 2017 Corporación de Desarrollo de la Región Los Andes.

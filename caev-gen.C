@@ -139,10 +139,10 @@ bool exists_arc(Net::Node * s, Net::Node * t)
   return false;
 }
 
-void build_upstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
+void build_upstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 		    TreeMap<CAEV *, Net::Node *> & nodes_map)
 {
-  CAEV * caev = r->get_info().first;
+  CAEV * caev = root->get_info().first;
   
   // Lista de productos pertenecientes al CAEV
   auto products = caev->get_products();
@@ -196,7 +196,7 @@ void build_upstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
 	     y se recursiona sobre la nueva actividad añadida.
 	  */
 	  Net::Node * s = net.insert_node(make_pair(c, NodePosition::UPSTREAM));
-	  net.insert_arc(s, r);
+	  net.insert_arc(s, root);
 	  nodes_map.insert(c, s);
 	  build_upstream(net, s, year, level, nodes_map);
 	}
@@ -209,17 +209,17 @@ void build_upstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
 	  */
 	  Net::Node * s = p->second;
 	  
-	  if (not exists_arc(s, r))
-	    net.insert_arc(s, r);
+	  if (not exists_arc(s, root))
+	    net.insert_arc(s, root);
 	}
       
     });
 }
 
-void build_downstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
+void build_downstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 		      TreeMap<CAEV *, Net::Node *> & nodes_map)
 {
-  CAEV * caev = r->get_info().first;
+  CAEV * caev = root->get_info().first;
   
   // Lista de productos pertenecientes al CAEV
   auto products = caev->get_products();
@@ -258,7 +258,7 @@ void build_downstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
 	{
 	  Net::Node * t =
 	    net.insert_node(make_pair(c, NodePosition::DOWNSTREAM));
-	  net.insert_arc(r, t);
+	  net.insert_arc(root, t);
 	  nodes_map.insert(c, t);
 	  build_downstream(net, t, year, level, nodes_map);
 	}
@@ -266,15 +266,15 @@ void build_downstream(Net & net, Net::Node * r, year_t year, CAEVLevel level,
 	{
 	  Net::Node * t = p->second;
 
-	  if (r == t)
+	  if (root == t)
 	    {
-	      if (not exists_arc(r, t) and not exists_arc(t, r))
-		net.insert_arc(r, t);
+	      if (not exists_arc(root, t) and not exists_arc(t, root))
+		net.insert_arc(root, t);
 	    }
 	  else
 	    {
-	      if (not exists_arc(r, t))
-		net.insert_arc(r, t);
+	      if (not exists_arc(root, t))
+		net.insert_arc(root, t);
 	    }
 	}
     });
@@ -341,5 +341,3 @@ void generate_caev_chain(const string & lvl, const string & caev_cod,
 
   plot(net, output_name);
 }
-
-

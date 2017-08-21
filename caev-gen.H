@@ -88,8 +88,8 @@ void build_upstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 
    @author Alejandro J. Mujica
 */
-void build_downstream(Net &, Net::Node *, year_t, CAEVLevel,
-		      TreeMap<CAEV *, Net::Node *> &);
+void build_downstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
+		      TreeMap<CAEV *, Net::Node *> & nodes_map);
 
 /** Función que construye una cadena productiva por actividad económica.
 
@@ -98,9 +98,9 @@ void build_downstream(Net &, Net::Node *, year_t, CAEVLevel,
     existen relaciones económicas entre las actividades en los nodos.
 
     @param lvl Cadena que indica cual es el nivel de detalle para el código de
-    la actividad económica,
+    la actividad económica.
     @param caev_cod Código de la actividad económica a partir de la cual se va
-    a construir la cadena,
+    a construir la cadena.
     @param year Año de las producciones en la cadena.
     @param input_name nombre del archivo de datos que almacena la información
     de toda la red productiva.

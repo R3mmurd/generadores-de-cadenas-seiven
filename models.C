@@ -36,7 +36,7 @@ CAEVLevel str_to_caevlevel(const string & lvl)
   if (regex_match(lvl, regex{"[rR][aA][mM][aA]"}))
     return CAEVLevel::BRANCH;
 
-  throw logic_error("Error en nivel de actividad económica");
+  throw domain_error("Error en nivel de actividad económica");
 }
 
 string caevlevel_to_str(CAEVLevel level)
@@ -48,7 +48,7 @@ string caevlevel_to_str(CAEVLevel level)
     case CAEVLevel::GROUP:    return "Grupo";
     case CAEVLevel::CLASS:    return "Clase";
     case CAEVLevel::BRANCH:   return "Rama";
-    default: throw logic_error("Error en nivel de actividad económica");
+    default: throw domain_error("Error en nivel de actividad económica");
     }
 }
 
@@ -87,7 +87,7 @@ CAEV * search_caevlevel(const string & cod, CAEVLevel level, const Map & map)
 	return map.caev_branches.search(branch);
       }
     default:
-      throw logic_error("Error en nivel de actividad económica");
+      throw domain_error("Error en nivel de actividad económica");
     }
 }
 
@@ -109,7 +109,7 @@ TariffCodeLevel str_to_tariffcodelevel(const string & lvl)
 		  regex{"[sS][uU][bB][sS][uU][bB][pP][aA][rR][tT][iI][dD][aA]"}))
     return TariffCodeLevel::SUBSUBITEM;
 
-  throw logic_error("Error en nivel de código arancelario");
+  throw domain_error("Error en nivel de código arancelario");
 }
 
 string tariffcodelevel_to_str(TariffCodeLevel level)
@@ -121,14 +121,47 @@ string tariffcodelevel_to_str(TariffCodeLevel level)
     case TariffCodeLevel::ITEM:       return "Partida";
     case TariffCodeLevel::SUBITEM:    return "Subpartida";
     case TariffCodeLevel::SUBSUBITEM: return "Subsubpartida";
-    default: throw logic_error("Error en nivel de código arancelario");
+    default: throw domain_error("Error en nivel de código arancelario");
     }
 }
 
 TariffCode * search_tariffcodelevel(const string & cod, TariffCodeLevel level,
 				    const Map & map)
 {
-  return nullptr;
+  switch (level)
+    {
+    case TariffCodeLevel::SECTION:
+      {
+	TariffCodeSection tc;
+	tc.cod = cod;
+	return map.tariffcode_sections.search(tc);
+      }
+    case TariffCodeLevel::CHAPTER:
+      {
+	TariffCodeChapter tc;
+	tc.cod = cod;
+	return map.tariffcode_chapters.search(tc);
+      }
+    case TariffCodeLevel::ITEM:
+      {
+	TariffCodeItem tc;
+	tc.cod = cod;
+	return map.tariffcode_items.search(tc);
+      }
+    case TariffCodeLevel::SUBITEM:
+      {
+	TariffCodeSubItem tc;
+	tc.cod = cod;
+	return map.tariffcode_subitems.search(tc);
+      }
+    case TariffCodeLevel::SUBSUBITEM:
+      {
+	TariffCodeSubSubItem tc;
+	tc.cod = cod;
+	return map.tariffcode_subsubitems.search(tc);
+      }
+    default: throw domain_error("Error en nivel de código arancelario");
+    }
 }
 
 List<SubUE *> CAEVSection::get_sub_ues() const
