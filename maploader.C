@@ -214,7 +214,7 @@ void process_cmd_line(int argc, char * argv[])
   if (not restored or output.getValue() != DftConfValues::OUTPUT_NAME)
     conf.set_output_name(output.getValue());
 
-  if (not password.getValue().empty())
+  if (password.isSet())
     db_prop.setPassword(password.getValue());
   else if (not no_password.getValue())
     {
