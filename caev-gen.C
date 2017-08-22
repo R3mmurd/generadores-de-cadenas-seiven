@@ -82,7 +82,8 @@ void plot(const Net & net, const string & output_name)
 	  
 	});
 
-      s_label1 << "Unidades económica: " << ues.size() << endl << endl;
+      s_label1 << "Unidades económica: " << ues.size() << "\\n"
+	       << "\\n________________________\\n";
 
       string label = s_label1.str() + s_label2.str();
 
