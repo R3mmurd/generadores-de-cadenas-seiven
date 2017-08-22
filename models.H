@@ -491,6 +491,21 @@ struct TariffCode : public Cod
       al código arancelario.
   */
   virtual List<Product *> get_products() const = 0;
+
+  /** Retorna las sub unidades económicas cuyos productos pertenecen al código
+      arancelario.
+  */
+  List<SubUE *> get_sub_ues() const
+  {
+    TreeSet<SubUE *> sub_ues;
+
+    get_products().for_each([&] (auto p)
+			    {
+			      sub_ues.insert(p->sub_ue);
+			    });
+
+    return sub_ues.items();
+  }
 };
 
 /** Tipo que representa códigos arancelaros en nivel de detalle Sección.
