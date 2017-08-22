@@ -25,7 +25,7 @@ using namespace TCLAP;
 
 int main(int argc, char * argv[])
 {
-  CmdLine cmd("CAEV chains generator", ' ', "0.0");
+  CmdLine cmd("CAEV chains generator", ' ', "1.0");
 
   ValueArg<string> level("l", "level",
 			 "Nivel de clasificación de la actividad económica",
