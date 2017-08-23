@@ -69,7 +69,7 @@ void plot(const Net & net, const string & output_name);
 void build_upstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 		    TreeMap<CAEV *, Net::Node *> & nodes_map);
 
-/* Función que construye toda la red aguas arriba.
+/* Función que construye toda la red aguas abajo.
 
    Dado un nodo del grafo, esta operación se encarga de buscar todas las
    actividades económicas a las cuales pertenecen los productos que utilizan
