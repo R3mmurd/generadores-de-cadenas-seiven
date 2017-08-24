@@ -913,11 +913,11 @@ struct UE
 */
 struct SubUE
 {
-  db_id_t            db_id;
-  string             name;
-  string             location;
-  UE               * ue;
-  CAEVBranch       * caev;
+  db_id_t         db_id;
+  string          name;
+  string          location;
+  UE            * ue;
+  CAEVBranch    * caev;
   List<Product *> products;
 
   SubUE()

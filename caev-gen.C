@@ -31,8 +31,10 @@ void plot(const Net & net, const string & output_name)
       throw runtime_error(s.str());
     }
 
-  output << "graph g" << endl << "{" << endl;
-
+  output << "digraph g" << endl << "{" << endl
+	 << "  rankdir=LR;\n"
+	 << "  compound = true;\n";
+    
   TreeMap<Net::Node *, size_t> nodes_map;
   size_t i = 0;
   
@@ -59,7 +61,7 @@ void plot(const Net & net, const string & output_name)
 	     << "  {\n"
 	     << "    style = filled;\n"
 	     << "    fontcolor = white;\n"
-	     << "    color = " << node_color << endl
+	     << "    color = " << node_color << ";\n"
 	     << "    label = \"" << s_title.str() << "\";\n";
 
       stringstream s_label1, s_label2;
@@ -105,7 +107,7 @@ void plot(const Net & net, const string & output_name)
       size_t      s_idx = nodes_map[s];
       size_t      t_idx = nodes_map[t];
       output << "  " << s_idx << " -> " << t_idx
-	     << "[lhead = cluster_" << s_idx << " ltail = cluster_" << t_idx
+	     << "[lhead = cluster_" << t_idx << " ltail = cluster_" << s_idx
 	     << "];" << endl;
     }
 
