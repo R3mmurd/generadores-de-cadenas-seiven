@@ -59,6 +59,5 @@ Este paquete contiene los siguientes archivos:
 
 Adicionalmente, el paquete contiene el siguiente sub directorio:
 
-* DB: Contiene una pequeña biblioteca para las consultas en la
-  base de datos PostgreSQL. Ejecute el comando make para generar la biblioteca
-  estática libDbAccess.a
+* DB: Contiene una pequeña biblioteca para las consultas en la  base de datos
+  PostgreSQL.

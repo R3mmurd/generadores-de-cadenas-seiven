@@ -20,13 +20,24 @@
 
 PQ = /usr/include/postgresql
 
-CXX = g++ -Ofast -g 
+CXX = clang++
+
+WARN = -Wall -Wextra -Wcast-align -Wno-sign-compare -Wno-write-strings \
+       -Wno-parentheses 
+
+FLAGS = -D_GLIBCXX__PTHREADS -std=c++14 $(WARN)
+
+DBG = -O0 -g -DDEBUG $(FLAGS)
+
+FAST = -Ofast -DNDEBUG $(FLAGS)
 
 AR = ar
 
 LIBNAME = DbAccess
 
 LOCALLIB = lib$(LIBNAME).a
+
+LOCALLIBDBG = lib$(LIBNAME)Dbg.a
 
 WARN = -Wall -Wextra -Wcast-align -Wno-sign-compare -Wno-write-strings \
        -Wno-parentheses -Wno-unused-function
@@ -39,13 +50,37 @@ SOURCES = dbProperties.C dbConnection.C dbQuery.C strQuery.C
 
 OBJECTS = dbProperties.o dbConnection.o dbQuery.o strQuery.o
 
-lib:
-	$(RM) $(LOCALLIB)
-	$(CXX) $(INCLUDE) -c $(SOURCES) $(FLAGS)
+OBJECTSDBG = dbPropertiesDbg.o dbConnectionDbg.o dbQueryDbg.o strQueryDbg.o
+
+libDbAccess.a: dbProperties.o dbConnection.o dbQuery.o strQuery.o autoConnection.H
 	$(AR) -cvq $(LOCALLIB) $(OBJECTS)
 
-clean:
-	$(RM) *~ *.o
-clean-all:
-	$(RM) *~ *.o $(LOCALLIB)
+libDbAccessDbg.a: dbPropertiesDbg.o dbConnectionDbg.o dbQueryDbg.o strQueryDbg.o autoConnection.H
+	$(AR) -cvq $(LOCALLIBDBG) $(OBJECTSDBG)
 
+dbProperties.o: dbProperties.H dbProperties.C
+	$(CXX) $(FAST) $(INCLUDE) -c dbProperties.C
+
+dbPropertiesDbg.o: dbProperties.H dbProperties.C
+	$(CXX) $(DBG) $(INCLUDE) -c dbProperties.C -o dbPropertiesDbg.o
+
+dbConnection.o: dbConnection.H dbConnection.C
+	$(CXX) $(FAST) $(INCLUDE) -c dbConnection.C
+
+dbConnectionDbg.o: dbConnection.H dbConnection.C
+	$(CXX) $(FAST) $(INCLUDE) -c dbConnection.C -o dbConnectionDbg.o
+
+dbQuery.o: dbQuery.H dbQuery.C
+	$(CXX) $(FAST) $(INCLUDE) -c dbQuery.C
+
+dbQueryDbg.o: dbQuery.H dbQuery.C
+	$(CXX) $(FAST) $(INCLUDE) -c dbQuery.C -o dbQueryDbg.o
+
+strQuery.o: strQuery.H strQuery.C
+	$(CXX) $(FAST) $(INCLUDE) -c strQuery.C
+
+strQueryDbg.o: strQuery.H strQuery.C
+	$(CXX) $(FAST) $(INCLUDE) -c strQuery.C -o strQueryDbg.o
+
+clean:
+	$(RM) *~ *.o $(LOCALLIB) $(LOCALLIBDBG)
