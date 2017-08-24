@@ -15,24 +15,26 @@ Dependencias para utilizar este paquete:
 
 Este paquete contiene los siguientes archivos:
 
-* Makefile con las reglas para compilar los diversos programas. Este Makefile
+* README.md: este archivo.
+
+* LICENSE: Licencia Pública General de GNU versión 2 (GPLv2).
+
+* Makefile: Reglas para compilar los diversos programas. Este Makefile
   está configurado para compilar con clang++. Si tiene otro compilador,
   entonces modifique la variable CXX.
 
-* README.md: este archivo.
+* process.H contiene una clase utilitaria que envuelve el llamado a procesos
+  externos.
 
-* caev-gen.H y caev-gen.C contiene los algoritmos necesarios para construir
-  la cadena por actividad económica.
-
-* models.H y models.C contiene las estructuras de datos para el modelo de
+* models.H y models.C: Contienem las estructuras de datos para el modelo de
   mapa necesario para la construcción de las diversas cadenas.
 
-* process.H contiene una clase utilitaria que envuelve el llamado a procesos
-externos.
+* caev-gen.H y caev-gen.C: Contienen los algoritmos necesarios para construir
+  la cadena por actividad económica.
 
-* maploader.C
+* maploader.C: Programa que lee una base de datos SIDEPRO.
 
-  Este programa se encarga leer una base de datos sidepro, los carga en el
+  Este programa se encarga leer la base de datos, los carga en el
   modelo diseñado y lo almacena en un archivo de texto plano para
   posteriormente ser leído por los programas que construyen las cadenas.
 
@@ -41,9 +43,9 @@ externos.
   - Para obtener ayuda de cómo ejecutar este programa,
     ejecute ./maploader --help
 
-* main-caev-gen.C
+* main-caev-gen.C: Programa que construye cadenas productivas por actividad
+  económica.
 
-  Este programa construye una cadena productiva por actividad económica.
   Recibe como parámetros en su ejecución el nivel de actividad económica
   (sección, división, grupo, clase o rama), el código de la actividad
   económica, el año de la producción, el nombre del archivo de texto con los
@@ -55,6 +57,8 @@ externos.
   - Para obtener ayuda de cómo ejecutar este programa,
   ejecute ./main-caev-gen --help
 
-* DB (Directorio) contiene una pequeña biblioteca para las consultas en la
+Adicionalmente, el paquete contiene el siguiente sub directorio:
+
+* DB: Contiene una pequeña biblioteca para las consultas en la
   base de datos PostgreSQL. Ejecute el comando make para generar la biblioteca
   estática libDbAccess.a
