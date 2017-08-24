@@ -41,7 +41,7 @@ INCLUDE =  -I. -I $(ALEPH)
 
 LIBS = -L $(ALEPH) -lAleph -lgsl -lgslcblas
 
-all: maploader main-caev-gen main-tariffcode-ue-gen main-tariffcode-product-gen
+all: maploader main-caev-gen
 
 maploader: DB/libDbAccess.a models.o maploader.C
 	$(CXX) $(FAST) $(INCLUDE) $(DBINC) $@.C -o $@ models.o $(DBLIB) $(LIBS)
