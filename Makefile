@@ -29,28 +29,31 @@ ALEPH = ~/Aleph-w
 
 PQINC = /usr/include/postgresql
 
-DBINC = -I $(PQINC) -I./DB
+DBDIR = DB
 
-DBLIB = -L./DB -lpq -lDbAccess
+DBINC = -I $(PQINC) -I $(DBDIR)
+
+DBLIB = -L $(DBDIR) -lpq -lDbAccess
+
+DBLIBDBG = -L $(DBDIR) -lpq -lDbAccessDbg
 
 INCLUDE =  -I. -I $(ALEPH)
 
 LIBS = -L $(ALEPH) -lAleph -lgsl -lgslcblas
 
-all: maploader main-caev-gen
+all: maploader main-caev-gen main-tariffcode-ue-gen main-tariffcode-product-gen
 
-maploader: models.o maploader.C
+maploader: DB/libDbAccess.a models.o maploader.C
 	$(CXX) $(FAST) $(INCLUDE) $(DBINC) $@.C -o $@ models.o $(DBLIB) $(LIBS)
 
-maploader-dbg: models-dbg.o maploader.C
-	$(CXX) $(DBG) $(INCLUDE) $(DBINC) maploader.C -o $@ models-dbg.o $(DBLIB) $(LIBS)
+maploader-dbg: DB/libDbAccessDbg.a models-dbg.o maploader.C
+	$(CXX) $(DBG) $(INCLUDE) $(DBINC) maploader.C -o $@ models-dbg.o $(DBLIBDBG) $(LIBS)
 
 main-caev-gen: models.o caev-gen.o main-caev-gen.C
 	$(CXX) $(FAST) $(INCLUDE) $@.C -o $@ models.o caev-gen.o $(LIBS)
 
 main-caev-gen-dbg: models-dbg.o caev-gen-dbg.o main-caev-gen.C
 	$(CXX) $(DBG) $(INCLUDE) main-caev-gen.C -o $@ models-dbg.o caev-gen-dbg.o $(LIBS)
-
 
 models.o: models.H models.C
 	$(CXX) $(FAST) $(INCLUDE) -c models.C
@@ -64,5 +67,12 @@ caev-gen.o: caev-gen.H caev-gen.C
 caev-gen-dbg.o: caev-gen.H caev-gen.C	
 	$(CXX) $(DBG) $(INCLUDE) -c caev-gen.C -o caev-gen-dbg.o
 
+DB/libDbAccess.a:
+	$(MAKE) -C $(DBDIR) libDbAccess.a
+
+DB/libDbAccessDbg.a:
+	$(MAKE) -C $(DBDIR) libDbAccessDbg.a
+
 clean:
+	$(MAKE) -C $(DBDIR) clean
 	$(RM) *~ *.o maploader main-caev-gen *-dbg
