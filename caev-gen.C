@@ -173,11 +173,17 @@ void build_upstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 		 arancelario. */
 	      
 	      auto filter_products =
-		purchase.provider->filter_products
-		([&](auto fp) {
-		  return fp->tariffcode == i->tariffcode;
-		});
+		purchase.provider->filter_products ([&](auto fp) {
 
+		    if (fp->tariffcode != i->tariffcode)
+		      return false;
+
+		    return fp->production(year).sales(year)
+		    .exists([&] (auto sale) {
+			return sale.client == purchase.provider;
+		      });
+		  });
+	      
 	      filter_products.for_each([&](auto & fp) {
 		  caev_set.insert(fp->get_caev(level));
 		});
@@ -244,7 +250,13 @@ void build_downstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 	  /* Obtengo los insumos que obtiene el cliente, tal que tengan el 
 	     mismo código arancelario del producto */      
 	  auto filter_inputs = sale.client->filter_inputs([&] (auto input) {
-	      return input->tariffcode == p->tariffcode;
+	      if (input->tariffcode != p->tariffcode)
+		return false;
+
+	      return input->production(year).purchases(year)
+	      .exists([&] (auto purchase) {
+		  return purchase.provider == sale.client;
+		});
 	    });
 
 	  filter_inputs.for_each([&] (auto input) {

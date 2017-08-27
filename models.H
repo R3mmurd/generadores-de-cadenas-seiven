@@ -59,7 +59,7 @@ struct Purchase;
 struct Map;
 
 /// Alias para el tipo de id en base de datos.
-using db_id_t = unsigned long long;
+using db_id_t = unsigned long;
 
 /// Alias para representar años.
 using year_t = unsigned short;
