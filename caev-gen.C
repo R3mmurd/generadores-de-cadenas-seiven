@@ -180,7 +180,7 @@ void build_upstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 
 		    return fp->production(year).sales(year)
 		    .exists([&] (auto & sale) {
-			return sale.client == purchase.provider;
+			return sale.client == p->sub_ue->ue;
 		      });
 		  });
 	      
@@ -255,7 +255,7 @@ void build_downstream(Net & net, Net::Node * root, year_t year, CAEVLevel level,
 
 	      return input->production(year).purchases(year)
 	      .exists([&] (auto & purchase) {
-		  return purchase.provider == sale.client;
+		  return purchase.provider == p->sub_ue->ue;
 		});
 	    });
 
