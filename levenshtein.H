@@ -1,6 +1,6 @@
 /*
-  Este archivo contiene la instrumentación de los algoritmos para construir
-  cadenas por producto.
+  Este archivo contiene la definición e instrumentación del algoritmo de
+  distancia de Levenshtein.
 
   Copyright (C) 2017 Corporación de Desarrollo de la Región Los Andes.
 
@@ -20,7 +20,13 @@
 # ifndef LEVENSHTEIN_H
 # define LEVENSHTEIN_H
 
-size_t levenshtein(const string &s1, const string &s2)
+/** Algoritmo de distancia de Levenshtein.
+   
+    Este algoritmo calcula la distancia de edición entre dos cadenas,
+    es decir, la cantidad de operaciones que se le debe aplicar a una de las
+    cadenas para que sea igual a la otra.
+*/
+size_t levenshtein(const string & s1, const string & s2)
 {
   size_t N1 = s1.size();
   size_t N2 = s2.size();
