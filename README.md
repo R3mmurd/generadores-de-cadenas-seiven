@@ -21,7 +21,7 @@ Dependencias para utilizar este paquete:
 Este paquete contiene los siguientes archivos:
 
 * README.md: este archivo.
-0.
+
 * LICENSE: Licencia Pública General de GNU versión 2 (GPLv2).
 
 * Makefile: Reglas para compilar los diversos programas. Este Makefile
