@@ -41,7 +41,7 @@ INCLUDE =  -I. -I $(ALEPH)
 
 LIBS = -L $(ALEPH) -lAleph -lgsl -lgslcblas
 
-all: maploader main-caev-gen
+all: maploader main-caev-gen main-tariffcode-ue-gen main-tariffcode-product-gen main-ue-gen main-product-gen
 
 maploader: DB/libDbAccess.a models.o maploader.C
 	$(CXX) $(FAST) $(INCLUDE) $(DBINC) $@.C -o $@ models.o $(DBLIB) $(LIBS)
@@ -55,6 +55,30 @@ main-caev-gen: models.o caev-gen.o main-caev-gen.C
 main-caev-gen-dbg: models-dbg.o caev-gen-dbg.o main-caev-gen.C
 	$(CXX) $(DBG) $(INCLUDE) main-caev-gen.C -o $@ models-dbg.o caev-gen-dbg.o $(LIBS)
 
+main-tariffcode-ue-gen: models.o tariffcode-gen.o main-tariffcode-ue-gen.C
+	$(CXX) $(FAST) $(INCLUDE) $@.C -o $@ models.o tariffcode-gen.o $(LIBS)
+
+main-tariffcode-ue-gen-dbg: models.o tariffcode-gen-dbg.o main-tariffcode-ue-gen.C
+	$(CXX) $(FAST) $(INCLUDE) main-tariffcode-ue-gen.C -o $@ models.o tariffcode-gen-dbg.o $(LIBS)
+
+main-tariffcode-product-gen: models.o tariffcode-gen.o main-tariffcode-product-gen.C
+	$(CXX) $(FAST) $(INCLUDE) $@.C -o $@ models.o tariffcode-gen.o $(LIBS)
+
+main-tariffcode-product-gen-dbg: models.o tariffcode-gen-dbg.o main-tariffcode-product-gen.C
+	$(CXX) $(FAST) $(INCLUDE) main-tariffcode-product-gen.C -o $@ models.o tariffcode-gen-dbg.o $(LIBS)
+
+main-ue-gen: models.o ue-gen.o main-ue-gen.C
+	$(CXX) $(FAST) $(INCLUDE) $@.C -o $@ models.o ue-gen.o $(LIBS)
+
+main-ue-gen-dbg: models-dbg.o ue-gen-dbg.o main-ue-gen.C
+	$(CXX) $(DBG) $(INCLUDE) main-ue-gen.C -o $@ models-dbg.o ue-gen-dbg.o $(LIBS)
+
+main-product-gen: models.o product-gen.o main-product-gen.C
+	$(CXX) $(FAST) $(INCLUDE) $@.C -o $@ models.o product-gen.o $(LIBS)
+
+main-product-gen-dbg: models-dbg.o product-gen-dbg.o main-product-gen.C
+	$(CXX) $(DBG) $(INCLUDE) main-product-gen.C -o $@ models-dbg.o product-gen-dbg.o $(LIBS)
+
 models.o: models.H models.C
 	$(CXX) $(FAST) $(INCLUDE) -c models.C
 
@@ -67,6 +91,24 @@ caev-gen.o: caev-gen.H caev-gen.C
 caev-gen-dbg.o: caev-gen.H caev-gen.C	
 	$(CXX) $(DBG) $(INCLUDE) -c caev-gen.C -o caev-gen-dbg.o
 
+tariffcode-gen.o: tariffcode-gen.H tariffcode-gen.C
+	$(CXX) $(FAST) $(INCLUDE) -c tariffcode-gen.C
+
+tariffcode-gen-dbg.o: tariffcode-gen.H tariffcode-gen.C
+	$(CXX) $(FAST) $(INCLUDE) -c tariffcode-gen.C -o tariffcode-gen-dbg.o
+
+ue-gen.o: ue-gen.H ue-gen.C
+	$(CXX) $(FAST) $(INCLUDE) -c ue-gen.C
+
+ue-gen-dbg.o: ue-gen.H ue-gen.C	
+	$(CXX) $(DBG) $(INCLUDE) -c ue-gen.C -o ue-gen-dbg.o
+
+product-gen.o: product-gen.H product-gen.C
+	$(CXX) $(FAST) $(INCLUDE) -c product-gen.C
+
+product-gen-dbg.o: product-gen.H product-gen.C	
+	$(CXX) $(DBG) $(INCLUDE) -c product-gen.C -o product-gen-dbg.o
+
 DB/libDbAccess.a:
 	$(MAKE) -C $(DBDIR) libDbAccess.a
 
@@ -75,4 +117,4 @@ DB/libDbAccessDbg.a:
 
 clean:
 	$(MAKE) -C $(DBDIR) clean
-	$(RM) *~ *.o maploader main-caev-gen *-dbg
+	$(RM) *~ *.o maploader main-caev-gen main-tariffcode-ue-gen main-tariffcode-product-gen main-ue-gen main-product-gen *-dbg

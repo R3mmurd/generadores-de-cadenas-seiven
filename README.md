@@ -1,7 +1,12 @@
 # generadores-de-cadenas-seiven
 
 Conjunto de programas para la construcción y visualización de cadenas
-de producción.
+productivas.
+
+Trabajo desarrollado para la Corporación de Desarrollo Región Los Andes
+(CORPOANDES) para ser incorporado en el proyecto Sistema Estadístico Integral
+de Venezuela (SEIVEN) desarrollado en el Centro Nacional de Desarrollo e
+Investigación en Tecnologías Libres (CENDITEL).
 
 Dependencias para utilizar este paquete:
 
@@ -16,7 +21,7 @@ Dependencias para utilizar este paquete:
 Este paquete contiene los siguientes archivos:
 
 * README.md: este archivo.
-
+0.
 * LICENSE: Licencia Pública General de GNU versión 2 (GPLv2).
 
 * Makefile: Reglas para compilar los diversos programas. Este Makefile
@@ -31,6 +36,20 @@ Este paquete contiene los siguientes archivos:
 
 * caev-gen.H y caev-gen.C: Contienen los algoritmos necesarios para construir
   la cadena por actividad económica.
+
+* tariffcode-gen.H y tariffcode-gen.C: Contienen los algoritmos necesarios para
+  construir la cadena por código arancelario, tanto para la vista por unidades
+  económicas como para la vista por productos.
+
+* ue-gen.H y ue-gen.C: Contienen los algoritmos necesarios para construir
+  la cadena por unidad económica.
+
+* product-gen.H y product-gen.C: Contienen los algoritmos necesarios para
+  construir la cadena por unidad económica.
+
+* levenshtein.H: Contiene la instrumentación del algoritmo de distancia de
+  Levenshtein el cual es utilizado para buscar cadenas que más se acerquen al
+  momento de emparejar los nombres de los insumos con los productos.
 
 * maploader.C: Programa que lee una base de datos SIDEPRO.
 
@@ -56,6 +75,60 @@ Este paquete contiene los siguientes archivos:
   - Compilación en modo optimizado: make main-caev-gen
   - Para obtener ayuda de cómo ejecutar este programa,
   ejecute ./main-caev-gen --help
+
+* main-tariffcode-ue-gen.C: Programa que construye cadenas productivas por
+  código arancelario con vista por unidades económicas.
+
+  Recibe como parámetros en su ejecución el nivel de código arancelario
+  (sección, capítulo, partida, sub partida, sub sub partida), el código
+  arancelario, el año de la producción, el nombre del archivo de texto con los
+  datos y el nombre de la archivo de salida el cual será una imagen vectorial
+  en formato svg.
+
+  - Compilación en modo depuración: make main-tariffcode-ue-gen-dbg
+  - Compilación en modo optimizado: make main-tariffcode-ue-gen
+  - Para obtener ayuda de cómo ejecutar este programa,
+  ejecute ./main-tariffcode-ue-gen --help
+
+* main-tariffcode-product-gen.C: Programa que construye cadenas productivas por
+  código arancelario con vista por productos.
+
+  Recibe como parámetros en su ejecución el nivel de código arancelario
+  (sección, capítulo, partida, sub partida, sub sub partida), el código
+  arancelario, el año de la producción, el nombre del archivo de texto con los
+  datos y el nombre de la archivo de salida el cual será una imagen vectorial
+  en formato svg.
+
+  - Compilación en modo depuración: make main-tariffcode-product-gen-dbg
+  - Compilación en modo optimizado: make main-tariffcode-product-gen
+  - Para obtener ayuda de cómo ejecutar este programa,
+  ejecute ./main-tariffcode-product-gen --help
+
+* main-ue-gen.C: Programa que construye cadenas productivas por unidad económica.
+
+  Recibe como parámetros en su ejecución o el RIF o el nombre de la empresa
+  (no ambos), el año de la producción, el nombre del archivo de texto con los
+  datos y el nombre de la archivo de salida el cual será una imagen vectorial
+  en formato svg.
+
+  - Compilación en modo depuración: make main-ue-gen-dbg
+  - Compilación en modo optimizado: make main-ue-gen
+  - Para obtener ayuda de cómo ejecutar este programa,
+  ejecute ./main-ue-gen --help
+
+* main-product-gen.C: Programa que construye cadenas productivas por producto.
+
+  Recibe como parámetros en su ejecución el número de id del producto en la base
+  de datos, el año de la producción, la cantidad máxima de niveles aguas arriba
+  que se construirá, la cantidad máxima de niveles aguas abajo que se construirá,
+  la distancia máxima de edición entre los nombres de productos en insumos,
+  el nombre del archivo de texto con los datos y el nombre de la archivo de
+  salida el cual será una imagen vectorial en formato svg.
+
+  - Compilación en modo depuración: make main-product-gen-dbg
+  - Compilación en modo optimizado: make main-product-gen
+  - Para obtener ayuda de cómo ejecutar este programa,
+  ejecute ./main-product-gen --help
 
 Adicionalmente, el paquete contiene el siguiente sub directorio:
 
